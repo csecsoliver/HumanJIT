@@ -1,5 +1,10 @@
 {
+  "name": "humanjit-backend",
+  "version": "0.0.1",
+  "type": "module",
   "dependencies": {
-    "socket.io": "^4.8.1"
+    "express": "^4.21.2",
+    "socket.io": "^4.8.1",
+    "tsx": "^4.20.3"
   }
 }
