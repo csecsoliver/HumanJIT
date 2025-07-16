@@ -19,13 +19,14 @@ async function refresh() {
 }
 async function submitLine() {
   thinking.value = true;
+  line.value = "";
   useSocketStore().socket?.once("code", (arg) => {
     code.value = ""
-    for (const i of JSON.parse(arg) as string[]){
+    for (const i of arg as string[]){
       code.value = code.value + i + "\n"
     }
   })
-  useSocketStore().socket?.emit("line", line);
+  useSocketStore().socket?.emit("line", line.value);
   useSocketStore().socket?.once("ack", ()=>{
     thinking.value = false;
     line.value = "";
@@ -53,7 +54,7 @@ setInterval(refresh, 1000)
         <button type="submit" :disabled="thinking">Submit line</button>
       </form>
       <p>To finish writing your code, and compare with your partner's results, press the button below.</p>
-      <button @click="finish">Finish</button>
+      <button @click="">Finish</button>
     </div>
     <div v-else-if="role == 'compiler'">
       <p>You are the compiler, you are given a line of code every turn and you must keep track of the code in your notes field.</p>

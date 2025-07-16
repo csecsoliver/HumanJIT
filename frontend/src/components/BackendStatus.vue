@@ -27,7 +27,7 @@ async function refresh() {
 async function connect() {
   useSocketStore().socket = io(ip.value, {autoConnect:false})
 
-  useSocketStore().socket?.on("connect", () => {
+  useSocketStore().socket?.once("connect", () => {
     refresh();
     console.log('connected')
     statusText.value = 'Connected.'
@@ -35,7 +35,11 @@ async function connect() {
   })
   statusText.value = 'Connecting...';
   useSocketStore().socket?.connect();
-  useSocketStore().socket?.on("state", (arg) => {playernum.value = arg.num});
+  useSocketStore().socket?.emit("join", room.value);
+  useSocketStore().socket?.once("state", (arg) => {
+    console.log(arg);
+    playernum.value = arg.num;
+  });
   useSocketStore().socket?.emit("state");
 }
 setInterval(refresh, 5000)

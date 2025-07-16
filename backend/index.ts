@@ -3,6 +3,7 @@ import { createServer } from 'node:http';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { Server } from 'socket.io';
+import { channels, Channel } from './channel';
 
 const app = express();
 const server = createServer(app);
@@ -24,6 +25,13 @@ app.get('/', (req, res) => {
 
 io.on('connection', (socket) => {
     console.log('a user connected');
+    socket.once("join", (channel)=>{
+        if (!channels[channel]){
+            new Channel(channel);
+        }
+        channels[channel].addPlayer(socket);
+        console.log("joined channel")
+    })
 });
 
 server.listen(3000, () => {

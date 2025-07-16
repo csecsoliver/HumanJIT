@@ -32,7 +32,7 @@ export class Channel {
     });
     
     socket.on("line", (line: string) => {
-      
+      console.log(line);
       this.codeLines.push(line);
       for (const p of this.players) {
         if (p.socket.id !== socket.id) {
@@ -53,6 +53,7 @@ export class Channel {
   }
 
   status(player: Player) {
+    console.log(player);
     player.socket.emit("state", {
       num: player.num,
       role: player.role,
