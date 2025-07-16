@@ -31,12 +31,24 @@ export class Channel {
       this.status(player);
     });
     
-    socket.on("code", (line: string) => {
+    socket.on("line", (line: string) => {
       
       this.codeLines.push(line);
-      socket.to(this.name).emit("code", line);
-      
+      for (const p of this.players) {
+        if (p.socket.id !== socket.id) {
+          p.socket.emit("line", line);
+        }
+      }
+      socket.emit("code", this.codeLines);
+
     });
+    socket.on("ack", ()=>{
+        for (const p of this.players) {
+        if (p.socket.id !== socket.id) {
+          p.socket.emit("ack");
+        }
+      }
+    })
 
   }
 

@@ -35,7 +35,7 @@ async function connect() {
   })
   statusText.value = 'Connecting...';
   useSocketStore().socket?.connect();
-  
+  useSocketStore().socket?.on("state", (arg) => {playernum.value = arg.num});
   useSocketStore().socket?.emit("state");
 }
 setInterval(refresh, 5000)
@@ -52,9 +52,9 @@ setInterval(refresh, 5000)
   <dialog :open="loginDialog">
     <form @submit.prevent="connect">
       <label for="ip">Backend IP address or hostname: </label>
-      <input id="ip" type="text" v-model="ip" required autofocus />
+      <input id="ip" type="text" v-model="ip" required autofocus /><br>
       <label for="room">Channel to join (2 player max for now): </label>
-      <input id="room" type="text" v-model="room" required />
+      <input id="room" type="text" v-model="room" required /><br>
       <button type="submit" :disabled="statusText == 'Connecting...'">Connect</button>
       <p>{{ statusText }}</p>
     </form>
