@@ -3,7 +3,6 @@ import { useSocketStore } from '@/stores/socket'
 import { ref, type Ref } from 'vue'
 
 import { io } from 'socket.io-client'
-import { constrainedMemory } from 'process'
 
 const active = ref(useSocketStore().socket?.active)
 const status = ref(useSocketStore().socket?.connected)
@@ -28,7 +27,7 @@ async function refresh() {
 async function connect() {
   useSocketStore().socket = io(ip.value, {autoConnect:false})
 
-  useSocketStore().socket?.on('connected', () => {
+  useSocketStore().socket?.on("connect", () => {
     refresh();
     console.log('connected')
     statusText.value = 'Connected.'
@@ -36,6 +35,8 @@ async function connect() {
   })
   statusText.value = 'Connecting...';
   useSocketStore().socket?.connect();
+  
+  useSocketStore().socket?.emit("state");
 }
 setInterval(refresh, 5000)
 </script>
