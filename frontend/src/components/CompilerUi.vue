@@ -2,20 +2,35 @@
 import { ref } from 'vue'
 import { useSocketStore } from '@/stores/socket'
 
-const role = ref('compiler')
+const role = ref('')
 const line = ref('')
 const thinking = ref(true)
 async function ack() {
-  thinking.value = true;
-  line.value = "Coder is coding...";
-  useSocketStore().socket?.off("line")
-  useSocketStore().socket?.on("line", (arg)=>{
-    line.value = arg;
-    console.log(arg);
-    thinking.value = false;
-  });
-  useSocketStore().socket?.emit("ack");
+  thinking.value = true
+  line.value = 'Coder is coding...'
+  useSocketStore().socket?.once('line', (arg) => {
+    line.value = arg
+    console.log(arg)
+    thinking.value = false
+  })
+  useSocketStore().socket?.emit('ack')
 }
+
+useSocketStore().$subscribe(() => {
+  if (useSocketStore().socket?.connected && role.value == '') {
+    useSocketStore().socket?.once('line', (arg) => {
+      line.value = arg
+      console.log(arg)
+      thinking.value = false
+    })
+    role.value = 'compiler'
+  }
+})
+useSocketStore().socket?.once('line', (arg) => {
+  line.value = arg
+  console.log(arg)
+  thinking.value = false
+})
 </script>
 <template>
   <div>
