@@ -20,6 +20,9 @@ app.use('/assets', express.static(join(__dirname, 'assets')));
 app.get('/', (req, res) => {
     res.sendFile(join(__dirname, 'index.html'));
 });
+app.get('/favicon.ico', (req, res) => {
+    res.sendFile(join(__dirname, 'favicon.ico'));
+});
 
 
 io.on('connection', (socket) => {
