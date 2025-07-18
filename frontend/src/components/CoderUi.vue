@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { useSocketStore } from '@/stores/socket'
 import { ref } from 'vue'
-import { watch } from 'vue'
 const role = ref('coder')
 const line = ref('')
 const code = ref('')
@@ -23,7 +22,9 @@ async function submitLine() {
     console.log("acknowledged")
   })
 }
-
+async function finish(){
+  useSocketStore().socket?.emit("finish")
+}
 
 </script>
 <template>
@@ -46,6 +47,6 @@ async function submitLine() {
         To finish writing your code, and compare with your partner's results, press the button
         below.
       </p>
-      <button @click="">Finish</button>
+      <button @click="finish" :disabled="thinking">Finish</button>
     </div>
 </template>

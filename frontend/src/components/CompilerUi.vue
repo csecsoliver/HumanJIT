@@ -4,6 +4,7 @@ import { useSocketStore } from '@/stores/socket'
 
 const role = ref('')
 const line = ref('')
+const notes = ref('')
 const thinking = ref(true)
 async function ack() {
   thinking.value = true
@@ -31,6 +32,11 @@ useSocketStore().socket?.once('line', (arg) => {
   console.log(arg)
   thinking.value = false
 })
+useSocketStore().socket?.on('notes:fetch', (callback) => {
+  callback(notes.value);
+  
+})
+
 </script>
 <template>
   <div>
@@ -47,6 +53,6 @@ useSocketStore().socket?.once('line', (arg) => {
     <input type="text" readonly v-model="line" />
     <button :disabled="thinking" @click="ack">Understood</button><br />
     <p>Write your notes below, feel free to resize the textbox</p>
-    <textarea name="notes" id="notes"></textarea>
+    <textarea name="notes" id="notes" v-model="notes"></textarea>
   </div>
 </template>

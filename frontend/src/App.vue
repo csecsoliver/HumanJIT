@@ -4,11 +4,15 @@ import BackendStatus from './components/BackendStatus.vue'
 import KnownServers from './components/KnownServers.vue'
 import { io } from 'socket.io-client'
 import { useSocketStore } from './stores/socket'
-import type { RefSymbol } from '@vue/reactivity'
 import CompilerUi from './components/CompilerUi.vue'
 import CoderUi from './components/CoderUi.vue'
+import CompareCode from './components/CompareCode.vue'
+import { watch } from 'vue'
 const role = ref('')
 const players = ref(0)
+const done = ref(false)
+const code = ref('')
+const notes = ref('')
 
 async function refresh() {
   useSocketStore().socket?.once('state', (arg) => {
@@ -19,6 +23,16 @@ async function refresh() {
 }
 
 setInterval(refresh, 5000)
+
+watch(role, (newRole, oldRole) => {
+  useSocketStore().socket?.once('review', (arg: { code: string; notes: string }) => {
+    done.value = true
+    code.value = arg.code
+    notes.value = arg.notes
+    console.log(arg.code + arg.notes);
+  })
+
+})
 </script>
 
 <template>
@@ -38,8 +52,11 @@ setInterval(refresh, 5000)
       handled.
     </p>
     <hr />
-    <CoderUi v-if="role == 'coder'"/>
-    <CompilerUi v-else-if="role == 'compiler'" />
+    <div v-if="!done">
+      <CoderUi v-if="role == 'coder'" />
+      <CompilerUi v-else-if="role == 'compiler'" />
+    </div>
 
+    <CompareCode v-else-if="done" :code="code" :notes="notes" />
   </main>
 </template>

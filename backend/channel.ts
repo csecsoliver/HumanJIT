@@ -38,22 +38,35 @@ export class Channel {
     socket.on("line", (line: string) => {
       console.log(line);
       this.codeLines.push(line);
-      for (const p of this.players) {
-        if (p.socket.id !== socket.id) {
-          p.socket.emit("line", line);
-        }
-      }
+      this.players.find(p => p.socket.id != player.socket.id)?.socket.emit("line", line);
       socket.emit("code", this.codeLines);
     });
     socket.on("ack", () => {
-      for (const p of this.players) {
-        if (p.socket.id !== socket.id) {
-          p.socket.emit("ack");
-        }
-      }
+      this.players.find(p => p.socket.id != player.socket.id)?.socket.emit("ack");
     });
     socket.on("line:get", ()=>{
       player.socket.emit("line:get", this.codeLines[-1]);
+    })
+    socket.on("rematch", ()=>{
+      for (const p of this.players){
+        p.role= p.role == "coder" ? "compiler" : "coder"; 
+      }
+      this.codeLines = [];
+      
+    })
+    socket.on("finish", ()=>{
+      let code = "";
+      for (const l of this.codeLines){
+        code += l + "\n";
+      }
+      let notes = "";
+      this.players.find(p => p.socket.id != player.socket.id)?.socket.emit("notes:fetch", (arg)=>{
+        notes = arg;
+      })
+      for (const p of this.players){
+
+        p.socket.emit("review", {code: code, notes: notes})
+      }
     })
     
   }
