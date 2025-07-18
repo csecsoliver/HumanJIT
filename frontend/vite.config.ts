@@ -21,5 +21,6 @@ export default defineConfig({
   },
   preview: {
     allowedHosts: ["show-time.ddns.net"]
-  }
+  },
+  
 })

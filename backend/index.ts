@@ -16,12 +16,11 @@ const io = new Server(server, {
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+app.use('/assets', express.static(join(__dirname, 'assets')));
 app.get('/', (req, res) => {
-    //   res.sendFile(join(__dirname, 'index.html'));
-    res.send("Go away");
-    const _asd = res as Response;
-    
+    res.sendFile(join(__dirname, 'index.html'));
 });
+
 
 io.on('connection', (socket) => {
     console.log('a user connected');
