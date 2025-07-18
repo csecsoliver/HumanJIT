@@ -40,16 +40,17 @@ watch(role, (newRole, oldRole) => {
     <BackendStatus />
   </header>
   <main>
-    <p>
-      Hello, and welcome to the coding practice game that's every vibecoder's nightmare. You will be
-      playing against one of your friends, and challenging their coding skills
-    </p>
-
-    <p>
-      The game has no real cheating prevention/request security, and in case you would want to play
-      illegitimately, just don't even bother. Additionally, connection drops are not necessarily
-      handled.
-    </p>
+    <div v-if="role == ''">
+      <p>
+        Hello, and welcome to the coding practice game that's every vibecoder's nightmare. You will be
+        playing against one of your friends, and challenging their coding skills
+      </p>
+      <p>
+        The game has no real cheating prevention/request security, and in case you would want to play
+        illegitimately, just don't even bother. Additionally, connection drops are not necessarily
+        handled.
+      </p>
+    </div>
     <hr />
     <div v-if="!done">
       <CoderUi v-if="role == 'coder'" />
