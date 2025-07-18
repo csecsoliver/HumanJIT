@@ -16,11 +16,11 @@ export class Channel {
 
     const player = {
       socket: socket,
-      num: this.players[0]?.num == "1"? "2": "1",
+      num: this.players[0]?.num == "1" ? "2" : "1",
       role:
         this.players[0]?.role == "compiler"
           ? "coder"
-          : "compiler" as "coder" | "compiler",
+          : ("compiler" as "coder" | "compiler"),
     };
     this.players.push(player);
     socket.emit("joined", this.name);
@@ -28,7 +28,7 @@ export class Channel {
     socket.emit("num", player.num);
     socket.join(this.name);
     socket.on("disconnect", (reason) => {
-      console.log("user disconnected: "+ reason);
+      console.log("user disconnected: " + reason);
       this.disconnectPlayer(player);
     });
     socket.on("state", () => {
@@ -38,53 +38,57 @@ export class Channel {
     socket.on("line", (line: string) => {
       console.log(line);
       this.codeLines.push(line);
-      this.players.find(p => p.socket.id != player.socket.id)?.socket.emit("line", line);
+      this.players
+        .find((p) => p.socket.id != player.socket.id)
+        ?.socket.emit("line", line);
       socket.emit("code", this.codeLines);
     });
     socket.on("ack", () => {
-      this.players.find(p => p.socket.id != player.socket.id)?.socket.emit("ack");
+      this.players
+        .find((p) => p.socket.id != player.socket.id)
+        ?.socket.emit("ack");
     });
-    socket.on("line:get", ()=>{
+    socket.on("line:get", () => {
       player.socket.emit("line:get", this.codeLines[-1]);
-    })
-    socket.on("rematch", ()=>{
-      for (const p of this.players){
-        p.role= p.role == "coder" ? "compiler" : "coder"; 
+    });
+    socket.on("rematch", () => {
+      for (const p of this.players) {
+        p.role = p.role == "coder" ? "compiler" : "coder";
       }
       this.codeLines = [];
-      
-    })
-    socket.on("finish", ()=>{
+    });
+    socket.on("finish", () => {
       let code = "";
-      for (const l of this.codeLines){
+      for (const l of this.codeLines) {
         code += l + "\n";
       }
       let notes = "";
-      this.players.find(p => p.socket.id != player.socket.id)?.socket.emit("notes:fetch", (arg)=>{
-        notes = arg;
-      })
-      for (const p of this.players){
-
-        p.socket.emit("review", {code: code, notes: notes})
-      }
-    })
-    
+      this.players
+        .find((p) => p.socket.id != player.socket.id)
+        ?.socket.once("notes:fetch", (arg) => {
+          notes = arg;
+          for (const p of this.players) {
+            p.socket.emit("review", { code: code, notes: notes });
+          }
+        });
+      this.players
+        .find((p) => p.socket.id != player.socket.id)
+        ?.socket.emit("notes:fetch");
+    });
   }
 
   status(player: Player) {
-    
     player.socket.emit("state", {
       num: player.num,
       role: player.role,
       players: this.players.length,
-      
     });
   }
   disconnectPlayer(player: Player) {
     const index = this.players.findIndex(
       (p) => p.socket.id === player.socket.id
     );
-    console.log(`index ${index} is being spliced out`)
+    console.log(`index ${index} is being spliced out`);
     if (index !== -1) {
       this.players.splice(index, 1);
 
@@ -94,7 +98,7 @@ export class Channel {
       }
       player.socket.disconnect(true);
     }
-    console.log(`index ${index} was being spliced out: ${this.players}`)
+    console.log(`index ${index} was being spliced out: ${this.players}`);
   }
 }
 interface Player {

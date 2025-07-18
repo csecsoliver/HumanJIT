@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import BackendStatus from './components/BackendStatus.vue'
-import KnownServers from './components/KnownServers.vue'
 import { io } from 'socket.io-client'
 import { useSocketStore } from './stores/socket'
 import CompilerUi from './components/CompilerUi.vue'
@@ -26,12 +25,12 @@ setInterval(refresh, 5000)
 
 watch(role, (newRole, oldRole) => {
   useSocketStore().socket?.once('review', (arg: { code: string; notes: string }) => {
-    done.value = true
     code.value = arg.code
     notes.value = arg.notes
+    done.value = true
     console.log(arg.code + arg.notes);
   })
-
+  done.value = false;
 })
 </script>
 

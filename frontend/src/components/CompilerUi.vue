@@ -32,9 +32,9 @@ useSocketStore().socket?.once('line', (arg) => {
   console.log(arg)
   thinking.value = false
 })
-useSocketStore().socket?.on('notes:fetch', (callback) => {
-  callback(notes.value);
-  
+useSocketStore().socket?.on('notes:fetch', () => {
+  useSocketStore().socket?.emit("notes:fetch", notes.value);
+
 })
 
 </script>
