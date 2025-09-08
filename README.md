@@ -7,7 +7,7 @@ You can host it yourself by running "sudo sh ./install.sh" after downloading the
 # Tutorial
 
 1. You get together with someone and send them the website link and the backend link, usually the same.   
-1. You both connect to the same room and the coder starts writing their code.   
+1. You both connect to the same channel (choose freely) and the coder starts writing their code.   
 1. Once done, they submit their line and the compiler interprets it.   
 1. Once ok, the compiler clicks understood and the coder can continue.   
 1. If the coder is finished, they can click the finish button to review the code.   
