@@ -11,7 +11,8 @@ export class Channel {
   }
   addPlayer(socket: Socket) {
     if (this.players.length >= 2) {
-      throw new Error("Channel is full");
+      socket.emit('error', 'Channel is full');
+      return;
     }
 
     const player = {
@@ -27,15 +28,28 @@ export class Channel {
     socket.emit("role", player.role);
     socket.emit("num", player.num);
     socket.join(this.name);
+    
     socket.on("disconnect", (reason) => {
       console.log("user disconnected: " + reason);
       this.disconnectPlayer(player);
     });
+    
     socket.on("state", () => {
       this.status(player);
     });
 
     socket.on("line", (line: string) => {
+      // Validate line input
+      if (typeof line !== 'string') {
+        socket.emit('error', 'Line must be a string');
+        return;
+      }
+      
+      if (line.length > 1000) {
+        socket.emit('error', 'Line too long (max 1000 characters)');
+        return;
+      }
+      
       console.log(line);
       this.codeLines.push(line);
       this.players
@@ -49,7 +63,8 @@ export class Channel {
         ?.socket.emit("ack");
     });
     socket.on("line:get", () => {
-      player.socket.emit("line:get", this.codeLines[-1]);
+      const lastLine = this.codeLines.length > 0 ? this.codeLines[this.codeLines.length - 1] : '';
+      player.socket.emit("line:get", lastLine);
     });
     socket.on("rematch", () => {
       for (const p of this.players) {
@@ -66,7 +81,15 @@ export class Channel {
       this.players
         .find((p) => p.socket.id != player.socket.id)
         ?.socket.once("notes:fetch", (arg) => {
-          notes = arg;
+          // Validate notes input
+          if (typeof arg !== 'string') {
+            notes = '';
+          } else if (arg.length > 10000) {
+            notes = arg.substring(0, 10000); // Truncate if too long
+          } else {
+            notes = arg;
+          }
+          
           for (const p of this.players) {
             p.socket.emit("review", { code: code, notes: notes });
           }

@@ -2,6 +2,10 @@
   "name": "humanjit-backend",
   "version": "0.0.1",
   "type": "module",
+  "scripts": {
+    "start": "npx tsx index.ts",
+    "dev": "npx tsx --watch index.ts"
+  },
   "dependencies": {
     "express": "^4.21.2",
     "socket.io": "^4.8.1",

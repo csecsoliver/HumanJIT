@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { useSocketStore } from '@/stores/socket'
 import { ref } from 'vue'
-const role = ref('coder')
 const line = ref('')
 const code = ref('')
 const thinking = ref(false);

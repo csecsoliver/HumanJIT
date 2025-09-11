@@ -5,11 +5,13 @@ import { dirname, join } from 'node:path';
 import { Server } from 'socket.io';
 import { channels, Channel } from './channel';
 
+const PORT = process.env.PORT || 3000;
+
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: "*"
+        origin: process.env.CORS_ORIGIN || "http://localhost:5173"
     }
 }
 );
@@ -27,15 +29,33 @@ app.get('/favicon.ico', (req, res) => {
 
 io.on('connection', (socket) => {
     console.log('a user connected');
-    socket.once("join", (channel)=>{
-        if (!channels[channel]){
-            new Channel(channel);
+    socket.once("join", (channel) => {
+        // Validate channel name
+        if (typeof channel !== 'string' || channel.length === 0 || channel.length > 50) {
+            socket.emit('error', 'Invalid channel name');
+            return;
         }
-        channels[channel].addPlayer(socket);
-        console.log("joined channel")
+        
+        // Sanitize channel name
+        const sanitizedChannel = channel.replace(/[^a-zA-Z0-9_-]/g, '');
+        if (sanitizedChannel !== channel) {
+            socket.emit('error', 'Channel name contains invalid characters');
+            return;
+        }
+        
+        if (!channels[sanitizedChannel]) {
+            new Channel(sanitizedChannel);
+        }
+        
+        try {
+            channels[sanitizedChannel].addPlayer(socket);
+            console.log("joined channel");
+        } catch (error) {
+            socket.emit('error', error instanceof Error ? error.message : 'Failed to join channel');
+        }
     })
 });
 
-server.listen(80, () => {
-    console.log('server running at http://localhost:25555');
+server.listen(PORT, () => {
+    console.log(`server running at http://localhost:${PORT}`);
 });
