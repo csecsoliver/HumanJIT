@@ -36,6 +36,6 @@ io.on('connection', (socket) => {
     })
 });
 
-server.listen(80, () => {
+server.listen(25555, () => {
     console.log('server running at http://localhost:25555');
 });
