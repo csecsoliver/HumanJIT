@@ -50,9 +50,10 @@ useSocketStore().socket?.on('notes:fetch', () => {
     </p>
     <hr />
     <p v-if="line == ''">Wait for a line from the coder.</p>
-    <input type="text" readonly v-model="line" />
+    <input type="text" aria-label="Line of code" readonly v-model="line" />
     <button :disabled="thinking" @click="ack">Understood</button><br />
-    <p>Write your notes below, feel free to resize the textbox</p>
+    <label for="notes">Write your notes below, feel free to resize the textbox</label>
+    <br />
     <textarea name="notes" id="notes" v-model="notes"></textarea>
   </div>
 </template>

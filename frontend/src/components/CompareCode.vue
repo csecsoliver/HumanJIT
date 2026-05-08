@@ -20,7 +20,9 @@ useSocketStore().socket?.emit("rematch");
     <p>
       I would encourage you to input the code into a proper interpreter, and check its real outcome.
     </p>
-    <textarea name="code" id="code" cols="30" rows="10" v-model="coderef"></textarea>
+    <label for="code">Code</label><br>
+    <textarea name="code" id="code" cols="30" rows="10" v-model="coderef"></textarea><br>
+    <label for="notes">Notes</label><br>
     <textarea name="notes" id="notes" cols="30" rows="10" v-model="notesref" readonly></textarea><br>
     <button @click="rematch">Rematch</button>
   </div>
